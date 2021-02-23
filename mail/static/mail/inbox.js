@@ -1,13 +1,13 @@
 document.addEventListener('DOMContentLoaded', function() {
 
   // Use buttons to toggle between views
-  document.querySelector('#inbox').addEventListener('click', () => load_mailbox('inbox'));
+  document.querySelector('#inbox').addEventListener('click', () => all_box());
   document.querySelector('#sent').addEventListener('click', () => send_box());
-  document.querySelector('#archived').addEventListener('click', () => load_mailbox('archive'));
+  document.querySelector('#archived').addEventListener('click', () => archive_box());
   document.querySelector('#compose').addEventListener('click', compose_email);
   document.querySelector('#compose-form').addEventListener('submit', send_mail);
   // By default, load the inbox
-  load_mailbox('inbox');
+  all_box();
 });
 
 function compose_email() {
@@ -59,7 +59,6 @@ function send_mail(e) {
 }
 
 
-// send inbox handler
 function send_box() {
   // load the box
   load_mailbox('sent');
@@ -68,6 +67,45 @@ function send_box() {
   fetch('/emails/sent')
   .then(response => response.json())
   .then(emails => {
-    console.log(emails);
+      emails.forEach((e) => render_email(e))
   });
+}
+
+function archive_box() {
+  // load the box
+  load_mailbox('archive');
+
+  // load the emails inside the box
+  fetch('/emails/archive')
+  .then(response => response.json())
+  .then(emails => {
+    emails.forEach((e) => render_email(e))
+  });
+}
+
+function all_box() {
+  // load the box
+  load_mailbox('inbox');
+
+  // load the emails inside the box
+  fetch('/emails/inbox')
+  .then(response => response.json())
+  .then(emails => {
+    emails.forEach((e) => render_email(e))
+  });
+}
+
+
+function render_email(email) {
+  const card = document.createElement('div');
+
+  card.className = 'card';
+  if (email.read)
+    card.classList.add('read');
+
+  card.innerHTML = `<span style="text-align: left">Sender: ${email.sender}</span>` +
+                    `<span style="text-align: left">Subject: ${email.subject}</span>` +
+                    `<span style="text-align: right">${email.timestamp}</span>`;
+
+  document.querySelector('#emails-view').append(card);
 }

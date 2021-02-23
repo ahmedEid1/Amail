@@ -1,3 +1,19 @@
 textarea {
     min-height: 400px;
 }
+
+.card {
+    box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2);
+    transition: 0.5s;
+    height: 50%;
+    padding: 10px;
+    margin: 5px;
+}
+
+.card:hover {
+    box-shadow: 0 8px 16px 0 rgba(0,0,0,0.5);
+}
+
+.read {
+    background: grey;
+}
