@@ -105,7 +105,7 @@ function render_email(email) {
   if (email.read)
     card.classList.add('read');
 
-  card.innerHTML = `<span style="text-align: left">Sender: ${email.sender}</span>` +
+  card.innerHTML += `<span style="text-align: left">Sender: ${email.sender}</span>` +
                     `<span style="text-align: left">Subject: ${email.subject}</span>` +
                     `<span style="text-align: right">${email.timestamp}</span>`;
 
@@ -137,11 +137,12 @@ function show_email(e) {
 
 
 function display_email(email) {
-   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#emails-view').style.display = 'block';
   document.querySelector('#compose-view').style.display = 'none';
 
+  const email_view = document.querySelector('#emails-view');
   // Show the mailbox name
-  document.querySelector('#emails-view').innerHTML =
+  email_view.innerHTML =
       `
         <h3>Email Details</h3>
         <p class="from">From: ${email.sender}</p>
@@ -155,10 +156,41 @@ function display_email(email) {
         <p class="body">${email.body}</p>
         `;
 
+  add_button_if_not_a_sent_email(email);
 
   mark_email_as_read(email);
 }
 
+function add_button_if_not_a_sent_email(email) {
+
+  let emails =  fetch('/emails/sent')
+  .then(response => response.json())
+  .then(emails => {
+    for (let i = 0; i < emails.length; i++) {
+    if (emails[i].id === email.id) {
+      return true;
+    }
+  }
+  add_archive_button(email);
+  return false;
+  });
+
+
+}
+
+function add_archive_button(email) {
+  const archive_button = document.createElement('button');
+  archive_button.classList.add('archive_button')
+
+  if (email.archived)
+    archive_button.innerHTML = `Unarchive email`;
+  else
+    archive_button.innerHTML = `Archive email`;
+
+  archive_button.onclick = (e) => archive_email(email);
+
+  document.querySelector('#emails-view').append(archive_button);
+}
 
 function mark_email_as_read(email) {
   if (email.read)
@@ -174,3 +206,20 @@ function mark_email_as_read(email) {
           email => console.log("email has been  read")
       )
 }
+
+function archive_email(email) {
+
+
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      archived: !email.archived
+    })
+  })
+  .then(
+      () => all_box()
+  )
+
+
+}
+
