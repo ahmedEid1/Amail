@@ -17,3 +17,12 @@ textarea {
 .read {
     background: grey;
 }
+
+.from, .to, .timestamp {
+    color: rgba(0, 0, 0, .5);
+    margin: 0;
+}
+
+.to {
+
+}

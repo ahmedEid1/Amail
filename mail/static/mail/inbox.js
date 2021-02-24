@@ -99,6 +99,8 @@ function all_box() {
 function render_email(email) {
   const card = document.createElement('div');
 
+  card.id = email.id;
+
   card.className = 'card';
   if (email.read)
     card.classList.add('read');
@@ -107,5 +109,68 @@ function render_email(email) {
                     `<span style="text-align: left">Subject: ${email.subject}</span>` +
                     `<span style="text-align: right">${email.timestamp}</span>`;
 
+
+  card.onclick = (e) => show_email(e);
+
+
   document.querySelector('#emails-view').append(card);
+}
+
+
+function show_email(e) {
+  let email_id = e.target.id;
+  if (email_id === '')
+    email_id = e.target.parentElement.id;
+
+  console.log(email_id)
+
+  fetch(`emails/${email_id}`)
+  .then(
+    response => response.json()
+  )
+  .then(
+      email => {
+        display_email(email)
+      }
+  )
+}
+
+
+function display_email(email) {
+   document.querySelector('#emails-view').style.display = 'block';
+  document.querySelector('#compose-view').style.display = 'none';
+
+  // Show the mailbox name
+  document.querySelector('#emails-view').innerHTML =
+      `
+        <h3>Email Details</h3>
+        <p class="from">From: ${email.sender}</p>
+        <p class="to">To: ${email.recipients}</p>
+        <p class="timestamp">${email.timestamp}</p>
+        <hr>
+        <h4>Subject</h4>
+        <p class="subject">${email.subject}</p>
+        <hr>
+        <h4>Body</h4>
+        <p class="body">${email.body}</p>
+        `;
+
+
+  mark_email_as_read(email);
+}
+
+
+function mark_email_as_read(email) {
+  if (email.read)
+    return;
+
+  fetch(`/emails/${email.id}`, {
+    method: 'PUT',
+    body: JSON.stringify({
+      read: true
+    })
+  })
+      .then(
+          email => console.log("email has been  read")
+      )
 }
