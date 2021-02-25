@@ -1,3 +1,13 @@
+# Amail
+a SPA (Single Page Application) email client using valine javascript
+
+---
+![view](test.gif)
+
+---
+## My tasks :
+
+
 - Send Mail: 
     - When a user submits the email composition form, add JavaScript code to actually send the email.
         - You’ll likely want to make a POST request to /emails, passing in values for recipients, subject, and body.
@@ -10,7 +20,6 @@
     - Each email should then be rendered in its own box (e.g. as a <div> with a border) that displays who the email is from, what the subject line is, and the timestamp of the email.
     - If the email is unread, it should appear with a white background. If the email has been read, it should appear with a gray background.
 ---
-
 - View Email: 
   - When a user clicks on an email, the user should be taken to a view where they see the content of that email.
   - Your application should show the email’s sender, recipients, subject, timestamp, and body.
