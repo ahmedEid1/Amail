@@ -18,6 +18,8 @@ function compose_email() {
 
   // Clear out composition fields
   document.querySelector('#compose-recipients').value = '';
+  document.querySelector('#compose-recipients').disabled = false  ;
+
   document.querySelector('#compose-subject').value = '';
   document.querySelector('#compose-body').value = '';
 }
@@ -158,6 +160,8 @@ function display_email(email) {
 
   add_button_if_not_a_sent_email(email);
 
+  add_reply_button(email);
+
   mark_email_as_read(email);
 }
 
@@ -223,3 +227,35 @@ function archive_email(email) {
 
 }
 
+function add_reply_button(email) {
+  const archive_button = document.createElement('button');
+  archive_button.classList.add('reply_button')
+
+  archive_button.innerHTML = `replay to email`;
+  archive_button.onclick = (e) => reply_to_email(email);
+
+  document.querySelector('#emails-view').append(archive_button);
+}
+
+
+function reply_to_email(email) {
+  compose_email();
+
+  const recipient = document.querySelector('#compose-recipients');
+  recipient.value = email.sender;
+  recipient.disabled = true;
+
+  let subject = 'Re:';
+  if (email.subject.slice(0, 3).toUpperCase() === "RE:")
+    subject += email.subject.slice(3)
+  else
+    subject += " " + email.subject
+
+  document.querySelector('#compose-subject').value = subject;
+  document.querySelector('#compose-body').value =
+  `On ${email.timestamp}, ${email.sender} wrote this :
+  ${email.body}
+ 
+  `;
+
+}
